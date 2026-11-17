@@ -5,6 +5,8 @@ import TimeRuler from '../components/TimeRuler';
 import ExhibitCard from '../components/ExhibitCard';
 import { plateNumber, techList } from '../lib/plate';
 import { monthMn, dayOf, yearOf } from '../lib/format';
+import { useTitle } from '../lib/useTitle';
+import { byDeptOrder } from '../lib/order';
 
 const PUBLIC_STATUS = 'approved';
 
@@ -15,6 +17,7 @@ export default function Home() {
   const [milestones, setMilestones] = useState([]);
   const [year, setYear] = useState(null);
   const [state, setState] = useState('loading');
+  useTitle(null);
 
   useEffect(() => {
     let alive = true;
@@ -22,14 +25,14 @@ export default function Home() {
       const [ex, te, ev, ms] = await Promise.all([
         supabase.from('exhibits').select('*, profiles(display_name)')
           .eq('status', PUBLIC_STATUS).order('year_created', { ascending: false }),
-        supabase.from('teachers').select('id,name,position,photo_url').limit(8),
+        supabase.from('teachers').select('*'),
         supabase.from('events').select('id,title,event_date,cover_image_url')
           .order('event_date', { ascending: false }),
         supabase.from('milestones').select('*').order('year', { ascending: true }),
       ]);
       if (!alive) return;
       if (ex.error || te.error || ev.error) { setState('error'); return; }
-      setExhibits(ex.data); setTeachers(te.data); setEvents(ev.data);
+      setExhibits(ex.data); setTeachers([...te.data].sort(byDeptOrder).slice(0, 8)); setEvents(ev.data);
       setMilestones(ms.error ? [] : ms.data);
       setState('ready');
     })();
@@ -84,7 +87,10 @@ export default function Home() {
               Оюутны бүтээл, багш нар, арга хэмжээ, тэнхимийн түүхийг нэг архивт хадгална.
               Жилээ сонгоход тэр жилд хийгдсэн зүйл гарна.
             </p>
-            <Link to="/exhibits" className="btn btn--solid">Бүх үзмэрийг үзэх</Link>
+            <div className="actions">
+              <Link to="/exhibits" className="btn btn--solid">Бүх үзмэрийг үзэх</Link>
+              <Link to="/kiosk" className="btn btn--ghost">Үзэсгэлэнгийн горим</Link>
+            </div>
           </div>
           {featured ? (
             <Link to={`/exhibits/${featured.id}`} className="cover__feature">
@@ -199,9 +205,10 @@ export default function Home() {
           <ol className="timeline">
             {milestones.map((m) => (
               <li key={m.id} className="timeline__item">
+                {m.image_url && <img className="timeline__img" src={m.image_url} alt="" loading="lazy" />}
                 <span className="meta">{m.year}</span>
                 <h3 className="person__name">{m.title}</h3>
-                <p>{m.description}</p>
+                {m.description && <p>{m.description.length > 180 ? `${m.description.slice(0, 180)}…` : m.description}</p>}
               </li>
             ))}
           </ol>
@@ -210,10 +217,13 @@ export default function Home() {
 
       <footer className="footer">
         <div className="container footer__row">
-          <p>Мэдээллийн Системийн Менежментийн Тэнхим</p>
+          <p>Мэдээллийн Системийн Менежментийн Тэнхим<br /><a href="mailto:ism_dpt@ufe.edu.mn">ism_dpt@ufe.edu.mn</a> · С байр, 205 тоот</p>
           <nav aria-label="Хөлийн цэс">
             <Link to="/exhibits">Үзмэр</Link>
             <Link to="/events">Арга хэмжээ</Link>
+            <Link to="/about">Тэнхимийн тухай</Link>
+            <Link to="/insights">Статистик</Link>
+            <Link to="/placards">Хэвлэх шошго</Link>
             <Link to="/login">Нэвтрэх</Link>
           </nav>
         </div>

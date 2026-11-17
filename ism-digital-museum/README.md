@@ -1,16 +1,42 @@
-# React + Vite
+# ISM Дижитал музей
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Мэдээллийн Системийн Менежментийн Тэнхимийн оюутны бүтээл, багш нар, арга хэмжээ, түүхийн дижитал архив.
+React 19 · Vite · React Router 7 · Supabase (Auth, PostgreSQL + RLS, Storage).
 
-Currently, two official plugins are available:
+## Ажиллуулах
+```bash
+npm install
+npm run dev
+```
+`.env` (git-д орохгүй):
+```
+VITE_SUPABASE_URL=https://<project>.supabase.co
+VITE_SUPABASE_ANON_KEY=<publishable/anon key>
+```
+`npm run lint` · `npm run build`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Боломжууд
+| Хэсэг | Хаана |
+|---|---|
+| Үзмэр, багш, арга хэмжээ, түүх, бүтээгчид | `/exhibits`, `/teachers`, `/events`, `/history`, `/creators` |
+| **Хурдан хайлт**: бүх өгөгдлөөс хайна | Хаанаас ч `Ctrl+K` эсвэл `/` |
+| **Үзэсгэлэнгийн дэлгэц**: TV/проектор дээр үзмэрийг автоматаар солих, QR кодтой | `/kiosk` (`←/→` солих, `Space` зогсоох, `F` бүтэн дэлгэц) |
+| **Хэвлэх шошго**: үзмэр бүрийн QR кодтой шошго, A4-т 4 | `/placards` |
+| **Статистик**: жил, технологи, ангилал, бүтээгч, шинээр гарсан технологи | `/insights` |
+| **Төстэй бүтээл**: технологи, ангиллаар автоматаар олно | Үзмэрийн хуудас |
+| **Таалагдлаа, үзэлтийн тоо, "их үзэлттэй" эрэмбэ** | `db/engagement.sql`-ийг ажиллуулсны дараа |
+| Шүүлтүүр URL-д хадгалагдана (холбоосоор хуваалцана) | `/exhibits?tech=React&sort=popular` |
+| **CSV-ээр олноор нэмэх** (багш, арга хэмжээ, түүх, ангилал) | Админ → хүснэгт → "CSV файлаас олноор нэмэх" |
 
-## React Compiler
+## Бодит өгөгдөл оруулах
+1. **Нэг удаа:** Supabase → SQL Editor-т `db/engagement.sql`-ийг ажиллуулна. Энэ нь зөвхөн шинэ хүснэгт, функц нэмнэ; байгаа өгөгдөлд хүрэхгүй.
+2. **Админ** → хүснэгт сонгоно → **Загвар татах** → Excel/Google Sheets-д бөглөнө → *CSV UTF-8* хэлбэрээр хадгална → **Файл сонгох**.
+   Урьдчилан харж, алдаатай мөрийг заана. Ижил нэртэй бүртгэлийг давхар нэмэхгүй.
+   - Огноо: `YYYY-MM-DD` · Зураг: нийтэд нээлттэй `https://` холбоос (эсвэл дараа нь маягтаар upload)
+   - `event_photos`-д `event_id`-ийн оронд арга хэмжээний **нэрийг** бичиж болно.
+3. Үзмэрийг оюутнууд өөрсдөө "Миний бүтээл"-ээс нэмнэ → админ зөвшөөрсний дараа нийтлэгдэнэ.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Аюулгүй байдал (engagement.sql)
+- Хэн юуг таалагдсан нь нууц: хэрэглэгч зөвхөн өөрийн like-ийг харна; нийт тоог `exhibit_popularity()` функц гаргана.
+- Үзэлтийн тоог зөвхөн `record_exhibit_view()` функц нэмнэ, зөвхөн зөвшөөрсөн үзмэрт.
+- Мэдэгдэж буй хязгаарлалт: үзэлтийг хөтчийн session-оор л давхардуулахгүй тоолдог тул санаатайгаар олон дахин нэмж болно.

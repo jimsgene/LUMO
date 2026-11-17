@@ -11,3 +11,7 @@ export function techList(stack) {
   if (Array.isArray(stack)) return stack;
   return String(stack).split(',').map((s) => s.trim()).filter(Boolean);
 }
+// Who made an exhibit: named students/team ("authors") first, else the account that submitted it.
+export const creatorName = (ex) => ex.authors || ex.profiles?.display_name || '';
+// Groups works by the same author(s); several teams can share one submitting account.
+export const creatorKey = (ex) => (ex.authors ? `a:${ex.authors}` : `u:${ex.creator_id}`);

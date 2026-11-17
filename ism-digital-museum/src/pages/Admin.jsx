@@ -1,17 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { useAuth } from '../lib/auth';
+import { useAuth } from '../lib/useAuth';
+import { useAsync, must } from '../lib/useAsync';
+import { useTitle } from '../lib/useTitle';
+import CsvImport from '../components/CsvImport';
+import { byDeptOrder } from '../lib/order';
 
 // Нэг тохиргоогоор бүх хүснэгтийн CRUD-ийг удирдана.
 const RESOURCES = {
   teachers: {
-    label: 'Багш нар', table: 'teachers', title: 'name', order: 'name',
+    label: 'Багш нар', table: 'teachers', title: 'name', order: 'name', sortRows: true,
     fields: [
       { k: 'name', l: 'Нэр', req: true },
       { k: 'position', l: 'Албан тушаал' },
       { k: 'courses', l: 'Заадаг хичээл (таслалаар тусгаарла)' },
+      { k: 'degree', l: 'Цол зэрэг (MBA, Ph.D)' },
+      { k: 'email', l: 'Имэйл' },
+      { k: 'office', l: 'Өрөө' },
+      { k: 'sort_order', l: 'Дараалал (1 = эхэнд)', t: 'number' },
       { k: 'bio', l: 'Товч танилцуулга', t: 'textarea' },
+      { k: 'education', l: 'Боловсрол (мөр бүрт нэг)', t: 'textarea' },
+      { k: 'certification', l: 'Мэргэшлийн зэрэг (мөр бүрт нэг)', t: 'textarea' },
+      { k: 'research', l: 'Судалгааны чиглэл (таслалаар)', t: 'textarea' },
+      { k: 'publications', l: 'Бүтээл (мөр бүрт нэг)', t: 'textarea' },
+      { k: 'activities', l: 'Мэргэжлийн үйл ажиллагаа (мөр бүрт нэг)', t: 'textarea' },
+      { k: 'awards', l: 'Шагнал (мөр бүрт нэг)', t: 'textarea' },
       { k: 'photo_url', l: 'Зураг', t: 'image' },
     ],
   },
@@ -38,6 +52,7 @@ const RESOURCES = {
       { k: 'year', l: 'Он', t: 'number', req: true },
       { k: 'title', l: 'Гарчиг', req: true },
       { k: 'description', l: 'Тайлбар', t: 'textarea' },
+      { k: 'image_url', l: 'Зураг', t: 'image' },
     ],
   },
   exhibition_categories: {
@@ -49,25 +64,34 @@ const RESOURCES = {
   },
 };
 
-function Panel({ cfg }) {
-  const [rows, setRows] = useState([]);
-  const [opts, setOpts] = useState({});
+async function loadPanel(cfg) {
+  let rows = must(await supabase.from(cfg.table).select('*').order(cfg.order, { ascending: cfg.order === 'name' }));
+  if (cfg.sortRows) rows = [...rows].sort(byDeptOrder);
+  const opts = {};
+  for (const f of cfg.fields.filter((x) => x.t === 'select')) {
+    opts[f.k] = (await supabase.from(f.from.table).select(`id,${f.from.label}`)).data || [];
+  }
+  return { rows, opts };
+}
+
+// Remounted per tab (key={tab}), so form state starts fresh for each table.
+function Panel({ cfg: baseCfg }) {
+  const { data, status, reload } = useAsync(() => loadPanel(baseCfg), baseCfg.table);
+  const rows = useMemo(() => data?.rows ?? [], [data]);
+  const opts = data?.opts ?? {};
+  // Only offer fields whose columns exist yet (e.g. before db/seed-data/teachers.sql adds the new teacher columns)
+  const cfg = useMemo(() => {
+    if (!rows.length) return baseCfg;
+    const cols = new Set(Object.keys(rows[0]));
+    return { ...baseCfg, fields: baseCfg.fields.filter((f) => cols.has(f.k)) };
+  }, [baseCfg, rows]);
+  const load = reload;
   const [form, setForm] = useState({});
   const [files, setFiles] = useState({});
   const [editId, setEditId] = useState(null);
   const [error, setError] = useState('');
   const [ok, setOk] = useState('');
   const [busy, setBusy] = useState(false);
-
-  async function load() {
-    const r = await supabase.from(cfg.table).select('*').order(cfg.order, { ascending: cfg.order === 'name' });
-    setRows(r.data || []);
-    for (const f of cfg.fields.filter((x) => x.t === 'select')) {
-      const o = await supabase.from(f.from.table).select(`id,${f.from.label}`);
-      setOpts((p) => ({ ...p, [f.k]: o.data || [] }));
-    }
-  }
-  useEffect(() => { reset(); load(); /* eslint-disable-next-line */ }, [cfg.table]);
 
   function reset() { setForm({}); setFiles({}); setEditId(null); }
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
@@ -120,9 +144,10 @@ function Panel({ cfg }) {
       {error && <p className="msg msg--error" role="alert">{error}</p>}
       {ok && <p className="msg" role="status">{ok}</p>}
 
-      {rows.length === 0 ? <p className="empty">Одоогоор бүртгэл алга.</p> : (
+      <CsvImport cfg={cfg} existing={rows} options={opts} onDone={load} />
+      {status === 'loading' ? <p>Ачаалж байна…</p> : rows.length === 0 ? <p className="empty">Одоогоор бүртгэл алга.</p> : (
         <div className="table-wrap"><table className="table">
-          <thead><tr><th>Нэр</th><th></th></tr></thead>
+          <thead><tr><th>Нэр ({rows.length})</th><th></th></tr></thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.id}>
@@ -177,6 +202,7 @@ function Panel({ cfg }) {
 export default function Admin() {
   const { profile, loading } = useAuth();
   const [tab, setTab] = useState('teachers');
+  useTitle('Админ');
 
   if (loading || !profile) return <main className="container section"><p>Ачаалж байна…</p></main>;
   if (profile.role !== 'admin') return (
@@ -196,7 +222,7 @@ export default function Admin() {
           <button key={k} className="tab" aria-pressed={tab === k} onClick={() => setTab(k)}>{r.label}</button>
         ))}
       </div>
-      <Panel cfg={RESOURCES[tab]} />
+      <Panel key={tab} cfg={RESOURCES[tab]} />
     </main>
   );
 }

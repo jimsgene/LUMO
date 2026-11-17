@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useTitle } from '../lib/useTitle';
 import { monthMn, dayOf, yearOf } from '../lib/format';
 
 export default function Events() {
+  useTitle('Арга хэмжээ');
   const [items, setItems] = useState([]);
   const [year, setYear] = useState('');
   const [q, setQ] = useState('');

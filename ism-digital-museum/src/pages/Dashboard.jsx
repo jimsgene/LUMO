@@ -1,7 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { useAuth } from '../lib/auth';
+import { useAuth } from '../lib/useAuth';
+import { useAsync, must } from '../lib/useAsync';
+import { useTitle } from '../lib/useTitle';
 import { techList } from '../lib/plate';
 import { statusMn } from '../lib/format';
 
@@ -11,9 +13,6 @@ const isUrl = (s) => !s || /^https?:\/\/.+\..+/.test(s);
 export default function Dashboard() {
   const { user, profile } = useAuth();
   const [params, setParams] = useSearchParams();
-  const [mine, setMine] = useState([]);
-  const [pending, setPending] = useState([]);
-  const [cats, setCats] = useState([]);
   const [form, setForm] = useState(empty);
   const [editId, setEditId] = useState(null);
   const [file, setFile] = useState(null);
@@ -22,24 +21,21 @@ export default function Dashboard() {
   const [busy, setBusy] = useState(false);
   const isAdmin = profile?.role === 'admin';
 
-  const load = useCallback(async () => {
-    const m = await supabase.from('exhibits').select('*').eq('creator_id', user.id).order('created_at', { ascending: false });
-    setMine(m.data || []);
-    const c = await supabase.from('exhibition_categories').select('name').order('name');
-    setCats(c.data || []);
-    if (isAdmin) {
-      const p = await supabase.from('exhibits').select('*, profiles(display_name)').eq('status', 'pending').order('created_at');
-      setPending(p.data || []);
-    }
-  }, [user.id, isAdmin]);
-
-  useEffect(() => { load(); }, [load]);
+  useTitle('Миний бүтээл');
+  const { data, reload: load } = useAsync(async () => {
+    const [mine, cats, pending] = await Promise.all([
+      supabase.from('exhibits').select('*').eq('creator_id', user.id).order('created_at', { ascending: false }).then(must),
+      supabase.from('exhibition_categories').select('name').order('name').then((r) => r.data || []),
+      isAdmin ? supabase.from('exhibits').select('*, profiles(display_name)').eq('status', 'pending').order('created_at').then(must) : [],
+    ]);
+    return { mine, cats, pending };
+  }, `${user.id}:${isAdmin}`);
+  const mine = data?.mine ?? [], cats = data?.cats ?? [], pending = data?.pending ?? [];
 
   useEffect(() => {
     const id = params.get('edit');
     if (!id) return;
-    supabase.from('exhibits').select('*').eq('id', id).maybeSingle().then(({ data }) => data && startEdit(data));
-    // eslint-disable-next-line
+    supabase.from('exhibits').select('*').eq('id', id).maybeSingle().then(({ data: row }) => row && startEdit(row));
   }, [params]);
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
@@ -114,7 +110,7 @@ export default function Dashboard() {
                 {pending.map((x) => (
                   <tr key={x.id}>
                     <td><Link className="link" to={`/exhibits/${x.id}`}>{x.title}</Link></td>
-                    <td>{x.profiles?.display_name}</td><td>{x.year_created}</td>
+                    <td>{x.authors || x.profiles?.display_name}</td><td>{x.year_created}</td>
                     <td className="row-actions">
                       <button className="btn btn--solid" onClick={() => review(x, 'approved')}>Зөвшөөрөх</button>
                       <button className="btn" onClick={() => review(x, 'rejected')}>Татгалзах</button>

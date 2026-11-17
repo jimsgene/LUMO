@@ -1,10 +1,15 @@
+import { createClient } from '@supabase/supabase-js';
 
-import { createClient } from "@supabase/supabase-js";
+const url = (import.meta.env.VITE_SUPABASE_URL || '').trim().replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
+const key = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim();
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+export const isSupabaseConfigured = Boolean(url && key);
+if (!isSupabaseConfigured) {
+  console.error('[supabase] VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY missing in .env; restart "npm run dev" after adding them.');
+}
 
+// A placeholder keeps the app rendering (instead of a blank page) when .env is missing.
 export const supabase = createClient(
-  supabaseUrl,
-  supabaseKey
+  isSupabaseConfigured ? url : 'http://supabase-not-configured.invalid',
+  isSupabaseConfigured ? key : 'missing-anon-key',
 );

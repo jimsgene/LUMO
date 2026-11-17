@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useTitle } from '../lib/useTitle';
 import { errMn } from '../lib/format';
 
 export default function Login() {
+  useTitle('Нэвтрэх');
   const nav = useNavigate();
   const [mode, setMode] = useState('signin');
   const [name, setName] = useState('');

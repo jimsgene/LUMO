@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useTitle } from '../lib/useTitle';
 import { yearOf, dateMn } from '../lib/format';
 
 const TYPES = { milestone: 'Түүхэн үйл явдал', event: 'Арга хэмжээ', exhibit: 'Үзмэр' };
 
 // ISM Time Machine: түүх, арга хэмжээ, үзмэрийг он цагийн дарааллаар нэг шугамд харуулна.
 export default function History() {
+  useTitle('ISM Time Machine');
   const [items, setItems] = useState([]);
   const [on, setOn] = useState({ milestone: true, event: true, exhibit: true });
   const [state, setState] = useState('loading');
@@ -15,14 +17,14 @@ export default function History() {
     (async () => {
       const [ms, ev, ex] = await Promise.all([
         supabase.from('milestones').select('*'),
-        supabase.from('events').select('id,title,event_date,description'),
-        supabase.from('exhibits').select('id,title,year_created,description').eq('status', 'approved'),
+        supabase.from('events').select('id,title,event_date,description,cover_image_url'),
+        supabase.from('exhibits').select('id,title,year_created,description,image_url').eq('status', 'approved'),
       ]);
       if (ev.error || ex.error) return setState('error');
       const all = [
-        ...(ms.error ? [] : ms.data).map((m) => ({ type: 'milestone', id: m.id, year: m.year, title: m.title, text: m.description })),
-        ...ev.data.map((e) => ({ type: 'event', id: e.id, year: yearOf(e.event_date), title: e.title, text: dateMn(e.event_date), to: `/events/${e.id}` })),
-        ...ex.data.map((e) => ({ type: 'exhibit', id: e.id, year: e.year_created, title: e.title, text: e.description, to: `/exhibits/${e.id}` })),
+        ...(ms.error ? [] : ms.data).map((m) => ({ type: 'milestone', id: m.id, year: m.year, title: m.title, text: m.description, img: m.image_url })),
+        ...ev.data.map((e) => ({ type: 'event', id: e.id, year: yearOf(e.event_date), title: e.title, text: dateMn(e.event_date), to: `/events/${e.id}`, img: e.cover_image_url })),
+        ...ex.data.map((e) => ({ type: 'exhibit', id: e.id, year: e.year_created, title: e.title, text: e.description, to: `/exhibits/${e.id}`, img: e.image_url })),
       ].filter((i) => i.year);
       setItems(all); setState('ready');
     })();
@@ -56,7 +58,8 @@ export default function History() {
               <h2 className="tl__label">{y}</h2>
               <ul className="tl__list">
                 {list.map((i) => (
-                  <li key={`${i.type}-${i.id}`} className={`tl__item tl__item--${i.type}`}>
+                  <li key={`${i.type}-${i.id}`} className={`tl__item tl__item--${i.type}${i.img ? ' tl__item--img' : ''}`}>
+                    {i.img && <img className="tl__img" src={i.img} alt="" loading="lazy" />}
                     <span className="meta">{TYPES[i.type]}</span>
                     <h3 className="person__name">{i.to ? <Link to={i.to} className="link">{i.title}</Link> : i.title}</h3>
                     {i.text && <p>{i.text.length > 160 ? `${i.text.slice(0, 160)}…` : i.text}</p>}

@@ -1,6 +1,7 @@
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { Search, Home, Image, CalendarDays, Clock, Users } from 'lucide-react';
-import { useAuth } from '../lib/auth';
+import { useAuth } from '../lib/useAuth';
+import { openPalette } from '../lib/links';
 import { supabase } from '../lib/supabase';
 
 const links = [
@@ -9,10 +10,11 @@ const links = [
   { to: '/events', label: 'Арга хэмжээ' },
   { to: '/history', label: 'Түүх' },
   { to: '/creators', label: 'Бүтээгчид' },
+  { to: '/insights', label: 'Статистик' },
 ];
 
 export default function Nav() {
-  const { user, profile } = useAuth();
+  const { user, isAdmin } = useAuth();
   const nav = useNavigate();
   const logout = async () => { await supabase.auth.signOut(); nav('/'); };
 
@@ -30,12 +32,12 @@ export default function Nav() {
             ))}
           </nav>
           <div className="nav__actions">
-            <Link to="/exhibits?focus=search" className="icon-btn" aria-label="Үзмэр хайх">
-              <Search size={20} />
-            </Link>
+            <button type="button" className="icon-btn nav__search" onClick={openPalette} aria-label="Хайх (Ctrl+K)" title="Хайх (Ctrl+K)">
+              <Search size={20} /><kbd>Ctrl K</kbd>
+            </button>
             {user ? (
               <>
-                {profile?.role === 'admin' && <Link to="/admin" className="btn">Админ</Link>}
+                {isAdmin && <Link to="/admin" className="btn">Админ</Link>}
                 <Link to="/dashboard" className="btn">Миний бүтээл</Link>
                 <button className="btn" onClick={logout}>Гарах</button>
               </>

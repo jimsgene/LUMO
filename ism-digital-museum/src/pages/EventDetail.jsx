@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useTitle } from '../lib/useTitle';
 import { dateMn } from '../lib/format';
 
 export default function EventDetail() {
+  useTitle('Арга хэмжээ');
   const { id } = useParams();
   const [ev, setEv] = useState(null);
   const [photos, setPhotos] = useState([]);
