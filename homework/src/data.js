@@ -83,7 +83,7 @@ export const projects = [
       'Монголын спортын нийгэмлэгийн платформ. Гүйлт, трейл, явган аялал, дугуйн клубуудын эвент, мэдээ, гишүүнчлэлийг нэг дор цуглуулж, Instagram/Facebook дээр тарсан мэдээллийн асуудлыг шийднэ. Газрын зураг, realtime чат, Монгол/Англи хэлтэй.',
     tech: ['React 19', 'Tailwind 4', 'Supabase', 'Leaflet'],
     live: '',
-    repo: 'https://github.com/jimsgene/LUMO/tree/main/store',
+    repo: 'https://github.com/jimsgene/NOMAD',
     year: '2026',
   },
   {
