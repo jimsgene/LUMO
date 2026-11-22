@@ -14,7 +14,7 @@ export const owner = {
   email: 'B23FA1236@ufe.edu.mn',
   github: 'https://github.com/jimsgene',
   linkedin: '',
-  facebook: '',
+  facebook: 'https://www.facebook.com/anar.ganhuyg/',
   instagram: 'https://instagram.com/anar_ganhuyg1',
   status: 'Дадлагад нээлттэй',
 };
