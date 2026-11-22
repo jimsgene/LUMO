@@ -15,7 +15,7 @@ export const owner = {
   github: 'https://github.com/jimsgene',
   linkedin: '',
   facebook: '',
-  instagram: '',
+  instagram: 'https://instagram.com/anar_ganhuyg1',
   status: 'Дадлагад нээлттэй',
 };
 
