@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#161618"/>
+  <g stroke="#26262a"><path d="M0 120H800M0 240H800M0 360H800M0 480H800M160 0V600M320 0V600M480 0V600M640 0V600"/></g>
+  <path d="M60 470 C 180 380, 230 440, 320 330 S 470 220, 560 260 S 700 160, 760 120" fill="none" stroke="#ff5b14" stroke-width="4" stroke-linecap="round" stroke-dasharray="1 0"/>
+  <g fill="#ff5b14"><circle cx="60" cy="470" r="9"/></g>
+  <circle cx="760" cy="120" r="14" fill="none" stroke="#f1efe9" stroke-width="3"/>
+  <circle cx="760" cy="120" r="5" fill="#f1efe9"/>
+  <rect x="60" y="60" width="290" height="150" rx="10" fill="#1e1e21" stroke="#333337"/>
+  <text x="80" y="92" fill="#8d8a83" font-family="monospace" font-size="12">ЭВЕНТ · 07.12 · 07:00</text>
+  <text x="80" y="135" fill="#f1efe9" font-family="sans-serif" font-size="30" font-weight="300" letter-spacing="-1">Богд уулын трейл</text>
+  <text x="80" y="170" fill="#ff5b14" font-family="monospace" font-size="13">21 KM · ↑ 840 M</text>
+  <rect x="80" y="182" width="90" height="6" rx="3" fill="#333337"/><rect x="80" y="182" width="62" height="6" rx="3" fill="#ff5b14"/>
+  <rect x="470" y="400" width="270" height="140" rx="10" fill="#1e1e21" stroke="#333337"/>
+  <text x="490" y="430" fill="#8d8a83" font-family="monospace" font-size="12">КЛУБУУД</text>
+  <g font-family="sans-serif" font-size="15" fill="#f1efe9">
+    <text x="490" y="462">UB Runners</text><text x="490" y="490">Trail Mongolia</text><text x="490" y="518">Bike UB</text>
+  </g>
+  <g font-family="monospace" font-size="12" fill="#8d8a83" text-anchor="end">
+    <text x="720" y="462">412</text><text x="720" y="490">268</text><text x="720" y="518">190</text>
+  </g>
+  <text x="60" y="40" fill="#6d6a63" font-family="monospace" font-size="12">KINET / 2026</text>
+</svg>
