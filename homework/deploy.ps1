@@ -16,6 +16,8 @@ Copy-Item (Join-Path $src 'src'), (Join-Path $src 'public'), (Join-Path $src '.v
 
 Push-Location $tmp
 try {
+  # Vercel мэдээллээ stderr руу бичдэг тул энд алдаа гэж зогсоохгүй
+  $ErrorActionPreference = 'Continue'
   npx --yes vercel@latest deploy --prod --yes
 } finally {
   Pop-Location
