@@ -19,6 +19,13 @@ export const owner = {
   status: 'Дадлагад нээлттэй',
 };
 
+// Зураг — public/me.jpg
+export const photo = {
+  src: '/me.jpg',
+  alt: 'Ганхуяг Анар',
+  caption: 'Санта Моника, Калифорни',
+};
+
 // "Одоо" виджет — одоо юу хийж байгаа вэ
 export const now = [
   'SWE334 — портфолио OS бүтээж байна',
@@ -32,35 +39,28 @@ export const bio = [
   'React болон Supabase дээр бодит хэрэглээтэй вэб платформ, React Native-аар гар утасны апп хийсэн. Монгол хэрэглэгчдийн өдөр тутмын асуудлыг шийддэг бүтээгдэхүүн хийх нь миний зорилго.',
 ];
 
-// Ур чадвар — level нь 0–100
-export const skills = [
-  {
-    group: 'Frontend',
-    items: [
-      { name: 'React', level: 85 },
-      { name: 'JavaScript', level: 85 },
-      { name: 'Tailwind / CSS', level: 80 },
-      { name: 'React Native', level: 65 },
-    ],
-  },
-  {
-    group: 'Backend & Өгөгдөл',
-    items: [
-      { name: 'Supabase', level: 80 },
-      { name: 'PostgreSQL / SQL', level: 75 },
-      { name: 'Node.js', level: 65 },
-      { name: 'Python', level: 60 },
-    ],
-  },
-  {
-    group: 'Хэрэгсэл',
-    items: [
-      { name: 'Git / GitHub', level: 80 },
-      { name: 'Vite', level: 80 },
-      { name: 'Figma', level: 60 },
-      { name: 'Vercel', level: 70 },
-    ],
-  },
+// ============================================================
+//  УР ЧАДВАР — "одны зураг" хэлбэрээр харагдана.
+//  level: 1–5 (одны тод байдал), note: одон дээр дарахад гарах тайлбар
+// ============================================================
+export const hardSkills = [
+  { name: 'React', level: 5, note: 'KINET, музей, энэ портфолио — бүгд React дээр.' },
+  { name: 'JavaScript', level: 5, note: 'Frontend-ээс SQL функц дуудах хүртэл өдөр бүр.' },
+  { name: 'Supabase', level: 4, note: 'Auth, Storage, Realtime чат, RLS аюулгүй байдал.' },
+  { name: 'PostgreSQL', level: 4, note: 'RLS policy, trigger, `for update` түгжээ, 163 тест.' },
+  { name: 'Tailwind / CSS', level: 4, note: 'Дизайн систем, анимэйшн, responsive загвар.' },
+  { name: 'React Native', level: 3, note: 'Expo дээр GPS-тэй цаг агаарын апп.' },
+  { name: 'Git / Vercel', level: 4, note: 'Branch, merge, CI-гүйгээр шууд deploy.' },
+  { name: 'Python', level: 3, note: 'Өгөгдөл боловсруулах, жижиг скрипт.' },
+];
+
+export const softSkills = [
+  { name: 'Асуудал шийдэх', level: 5, note: 'Клубуудын тарамдсан мэдээллийн асуудлыг нэг платформд шийдсэн.' },
+  { name: 'Бие даан суралцах', level: 5, note: 'Supabase, Leaflet, Expo-г өөрөө судалж төсөлдөө ашигласан.' },
+  { name: 'Хэрэглэгчийг ойлгох', level: 4, note: 'Бүтээх бүрдээ "хэн, яагаад ашиглах вэ" гэдгээс эхэлдэг.' },
+  { name: 'Харилцаа', level: 4, note: 'Санаагаа тодорхой тайлбарлаж, санал хүсэлтийг сонсдог.' },
+  { name: 'Багаар ажиллах', level: 4, note: 'Git branch, код хянах, ажлаа хуваарилах.' },
+  { name: 'Цаг төлөвлөлт', level: 3, note: 'Том төслийг жижиг алхмуудад хувааж дуусгадаг.' },
 ];
 
 // Замнал (он, үйл явдал)
@@ -71,43 +71,74 @@ export const timeline = [
   { year: '2026', text: 'ISM Дижитал музей болон энэ Portfolio OS' },
 ];
 
-// Бүтээлүүд — image нь public/projects/ доторх зураг (өөрийн screenshot-оор сольж болно)
-// live: '' бол "Үзэх" товч харагдахгүй
+// ============================================================
+//  БҮТЭЭЛҮҮД
+//  live   — Vercel дээрх сайт (карт дээр дарахад шууд нээгдэнэ)
+//  images — public/projects/ доторх бодит screenshot-ууд (эхнийх нь нүүр зураг)
+// ============================================================
 export const projects = [
   {
     id: 'kinet',
     title: 'KINET',
     file: 'kinet.app',
-    image: '/projects/kinet.svg',
+    year: '2026',
+    kind: 'Вэб платформ',
+    tagline: 'Монголын спортын нийгэмлэгийг нэг дор',
+    images: ['/projects/kinet.svg'],
     description:
-      'Монголын спортын нийгэмлэгийн платформ. Гүйлт, трейл, явган аялал, дугуйн клубуудын эвент, мэдээ, гишүүнчлэлийг нэг дор цуглуулж, Instagram/Facebook дээр тарсан мэдээллийн асуудлыг шийднэ. Газрын зураг, realtime чат, Монгол/Англи хэлтэй.',
-    tech: ['React 19', 'Tailwind 4', 'Supabase', 'Leaflet'],
+      'Гүйлт, трейл, явган аялал, дугуйн клубууд эвент, мэдээгээ Instagram, Facebook дээр тус тусдаа зарладаг тул мэдээлэл тарамдсан байдаг. KINET эвент, гишүүнчлэл, чат, дэлгүүр, дасгалын бүртгэлийг нэг платформд цуглуулдаг.',
+    features: [
+      'Эвент: спорт, хот, огноогоор шүүх, бүртгэл, суудлын хязгаар, Google Calendar',
+      'Газрын зураг дээр маршрут зурах эсвэл GPX оруулах, өндөршлийн профайл',
+      'Клубын гишүүнчлэл, хураамж, дэлгүүр, Supabase Realtime чат',
+      'Strava шиг дасгал бичих: GPS, хурд, калори, kudos',
+      'Reddit шиг нийгэмлэг: пост, санал, мод хэлбэрийн сэтгэгдэл',
+      'RLS + trigger-ээр хамгаалсан төлбөр; PGlite дээр 163 шалгалт',
+    ],
+    tech: ['React 19', 'Tailwind 4', 'Supabase', 'Leaflet', 'Vitest'],
     live: '',
     repo: 'https://github.com/jimsgene/NOMAD',
-    year: '2026',
   },
   {
     id: 'museum',
     title: 'ISM Дижитал музей',
     file: 'ism-museum.app',
-    image: '/projects/museum.svg',
-    description:
-      'Мэдээллийн Системийн Менежментийн Тэнхимийн оюутны бүтээл, багш нар, арга хэмжээ, түүхийн дижитал архив. Ctrl+K хурдан хайлт, TV/проектор дээр QR кодтой үзэсгэлэнгийн горим, хэвлэх шошго, статистикийн самбартай.',
-    tech: ['React 19', 'React Router 7', 'Supabase', 'QR'],
-    live: '',
-    repo: 'https://github.com/jimsgene/LUMO/tree/main/ism-digital-museum',
     year: '2026',
+    kind: 'Вэб архив',
+    tagline: 'Тэнхимийн түүхийг дижитал болгосон',
+    images: ['/projects/museum-1.jpg', '/projects/museum-2.jpg', '/projects/museum-3.jpg', '/projects/museum-4.jpg'],
+    description:
+      'Мэдээллийн Системийн Менежментийн Тэнхимийн оюутны бүтээл, багш нар, арга хэмжээ, түүхийг хадгалдаг дижитал архив. Оюутнууд бүтээлээ өөрсдөө нэмж, админ зөвшөөрсний дараа нийтлэгдэнэ.',
+    features: [
+      'Ctrl+K хурдан хайлт — бүх өгөгдлөөс нэг дор',
+      'Үзэсгэлэнгийн горим: TV/проектор дээр QR кодтой автоматаар солигдоно',
+      'Үзмэр бүрийн QR кодтой хэвлэх шошго (A4-т 4)',
+      'Статистикийн самбар: жил, технологи, ангилал, бүтээгч',
+      'Төстэй бүтээлийг технологиор нь автоматаар санал болгоно',
+      'CSV файлаас олноор нэмэх, алдаатай мөрийг урьдчилан заана',
+    ],
+    tech: ['React 19', 'React Router 7', 'Supabase', 'QR code'],
+    live: 'https://lumo-ism.vercel.app',
+    repo: 'https://github.com/jimsgene/LUMO/tree/main/ism-digital-museum',
   },
   {
     id: 'weather',
     title: 'WeatherApp',
     file: 'weather.app',
-    image: '/projects/weather.svg',
+    year: '2025',
+    kind: 'Гар утасны апп',
+    tagline: 'Байршлаа мэдээд цаг агаарыг хэлнэ',
+    images: ['/projects/weather.svg'],
     description:
-      'Байршлаа автоматаар тодорхойлж цаг агаарын мэдээг харуулдаг гар утасны апп. Цаг агаараас хамааран өнгө нь солигддог градиент дэвсгэр, доод tab навигацтай.',
-    tech: ['React Native', 'Expo', 'Expo Location'],
+      'GPS-ээр байршлаа тодорхойлж, OpenWeatherMap-аас одоогийн цаг агаар, цаг тутмын болон 7 хоногийн урьдчилсан мэдээг харуулдаг React Native апп.',
+    features: [
+      'Expo Location-аар байршлаа автоматаар олно, хот хайх боломжтой',
+      'Цаг тутмын болон 7 хоногийн урьдчилсан мэдээ',
+      'Нар мандах, жаргах цагаар өдөр/шөнийг тодорхойлж өнгө нь солигдоно',
+      'Дэлгэрэнгүй: мэдрэгдэх температур, чийгшил, салхи',
+    ],
+    tech: ['React Native', 'Expo', 'Expo Location', 'OpenWeatherMap'],
     live: '',
     repo: 'https://github.com/jimsgene',
-    year: '2025',
   },
 ];

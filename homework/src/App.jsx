@@ -4,8 +4,6 @@ import { owner } from './data';
 import { loadPref, savePref, useIsMobile, useKonami } from './hooks';
 import { playSound, setSoundEnabled } from './sound';
 import BootScreen from './components/BootScreen';
-import Field, { FIELD_MODES } from './components/Field';
-import Cursor from './components/Cursor';
 import TopBar from './components/TopBar';
 import Hero from './components/Hero';
 import Widgets from './components/Widgets';
@@ -35,8 +33,7 @@ function initialPosition(app, index) {
 export default function App() {
   const isMobile = useIsMobile();
   const [stage, setStage] = useState('boot'); // 'boot' | 'desktop' | 'off'
-  const [theme, setTheme] = useState(() => loadPref('theme', 'dark'));
-  const [fieldMode, setFieldMode] = useState(() => loadPref('field', 'dots'));
+  const [theme, setTheme] = useState(() => loadPref('theme', 'light'));
   const [sound, setSound] = useState(() => loadPref('sound', true));
   const [windows, setWindows] = useState(initialWindows);
   const [activeId, setActiveId] = useState(null);
@@ -60,7 +57,6 @@ export default function App() {
     setSoundEnabled(sound);
     savePref('sound', sound);
   }, [sound]);
-  useEffect(() => savePref('field', fieldMode), [fieldMode]);
 
   // ---- Мэдэгдэл (toast) ----
   const toast = useCallback((text) => {
@@ -116,7 +112,6 @@ export default function App() {
   const toggleTheme = useCallback(() => setTheme((t) => (t === 'dark' ? 'light' : 'dark')), []);
   const triggerMatrix = useCallback(() => setMatrix(true), []);
   const stopMatrix = useCallback(() => setMatrix(false), []);
-  const cycleField = () => setFieldMode((m) => FIELD_MODES[(FIELD_MODES.indexOf(m) + 1) % FIELD_MODES.length]);
 
   const resetDesktop = () => {
     setWindows(initialWindows());
@@ -144,7 +139,6 @@ export default function App() {
   const actions = [
     ...APPS.map((a) => ({ id: `open-${a.id}`, label: `${a.title} нээх`, group: 'Апп', icon: a.id, keywords: a.file, run: () => openApp(a.id) })),
     { id: 'theme', label: theme === 'dark' ? 'Өдрийн горим' : 'Шөнийн горим', group: 'Үйлдэл', keywords: 'theme dark light', run: toggleTheme },
-    { id: 'field', label: 'Дэвсгэрийн хэв маяг солих', group: 'Үйлдэл', keywords: 'wallpaper field', run: cycleField },
     { id: 'sound', label: sound ? 'Дуу хаах' : 'Дуу нээх', group: 'Үйлдэл', keywords: 'sound', run: () => setSound((s) => !s) },
     { id: 'email', label: 'Имэйл хуулах', group: 'Үйлдэл', keywords: 'email mail', run: copyEmail },
     { id: 'github', label: 'GitHub', group: 'Холбоос', keywords: 'code repo', run: () => window.open(owner.github, '_blank', 'noopener') },
@@ -206,8 +200,6 @@ export default function App() {
 
   return (
     <div className="desktop" onClick={() => setMenu(null)} onContextMenu={openContextMenu}>
-      <Field mode={fieldMode} theme={theme} />
-      <div className="vignette" aria-hidden="true" />
       <div className="grain" aria-hidden="true" />
 
       <TopBar
@@ -224,7 +216,7 @@ export default function App() {
       />
 
       <Hero ready={ready} onOpen={openApp} onPalette={() => setPaletteOpen(true)} />
-      {!isMobile && <Widgets ready={ready} />}
+      {!isMobile && <Widgets ready={ready} onOpen={openApp} />}
 
       {/* Цонхнууд */}
       {APPS.map((a, i) => (
@@ -251,7 +243,6 @@ export default function App() {
           <li><button onClick={() => { setPaletteOpen(true); setMenu(null); }}>Командын самбар <kbd>⌘K</kbd></button></li>
           <li><button onClick={() => { openApp('terminal'); setMenu(null); }}>Терминал нээх</button></li>
           <li className="sep" />
-          <li><button onClick={() => { cycleField(); setMenu(null); }}>Дэвсгэр солих <kbd>{fieldMode}</kbd></button></li>
           <li><button onClick={() => { toggleTheme(); setMenu(null); }}>{theme === 'dark' ? 'Өдрийн горим' : 'Шөнийн горим'}</button></li>
           <li className="sep" />
           <li><button onClick={() => { resetDesktop(); toast('Ширээ цэвэрлэгдлээ'); }}>Бүх цонхыг хаах</button></li>
@@ -270,7 +261,6 @@ export default function App() {
 
       {matrix && <MatrixRain onDone={stopMatrix} />}
       {stage === 'boot' && <BootScreen onDone={onBootDone} />}
-      <Cursor />
     </div>
   );
 }

@@ -1,17 +1,20 @@
-import { now as nowList, skills } from '../data';
+import { now as nowList, photo } from '../data';
 import { useClock } from '../hooks';
 
-// Ширээний баруун талын виджетүүд: цаг, "одоо", стек
-export default function Widgets({ ready }) {
+// Ширээний баруун талын виджетүүд: зураг, цаг, "одоо"
+export default function Widgets({ ready, onOpen }) {
   const now = useClock();
   const hh = String(now.getHours()).padStart(2, '0');
   const mm = String(now.getMinutes()).padStart(2, '0');
-  const ss = String(now.getSeconds()).padStart(2, '0');
   const days = ['Ням', 'Даваа', 'Мягмар', 'Лхагва', 'Пүрэв', 'Баасан', 'Бямба'];
-  const stack = skills.flatMap((g) => g.items).sort((a, b) => b.level - a.level).slice(0, 6);
 
   return (
     <aside className={`widgets ${ready ? 'is-ready' : ''}`}>
+      <button className="widget photo-widget" onClick={() => onOpen('about')} aria-label="Миний тухай нээх">
+        <img src={photo.src} alt={photo.alt} />
+        <span className="photo-caption">{photo.caption}</span>
+      </button>
+
       <div className="widget">
         <div className="widget-label">
           <span>Локал цаг</span>
@@ -21,12 +24,8 @@ export default function Widgets({ ready }) {
           {hh}
           <span className="blink">:</span>
           {mm}
-          <small>{ss}</small>
         </div>
-        <div className="widget-foot">
-          {days[now.getDay()]} · {now.getFullYear()}.{String(now.getMonth() + 1).padStart(2, '0')}.
-          {String(now.getDate()).padStart(2, '0')}
-        </div>
+        <div className="widget-foot">{days[now.getDay()]} · Улаанбаатар</div>
       </div>
 
       <div className="widget">
@@ -42,18 +41,6 @@ export default function Widgets({ ready }) {
             </li>
           ))}
         </ol>
-      </div>
-
-      <div className="widget">
-        <div className="widget-label">
-          <span>Стек</span>
-          <span>top {stack.length}</span>
-        </div>
-        <div className="stack">
-          {stack.map((s) => (
-            <span key={s.name}>{s.name}</span>
-          ))}
-        </div>
       </div>
     </aside>
   );

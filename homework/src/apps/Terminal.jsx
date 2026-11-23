@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { bio, owner, projects, skills } from '../data';
+import { bio, hardSkills, owner, projects, softSkills } from '../data';
 
 const PROMPT = `${owner.firstName.toLowerCase()}@os:~$`;
 
 // Терминалаас нээж болох апп-ууд
 const OPENABLE = ['about', 'projects', 'contact', 'trash'];
 
-// ASCII хэлбэрийн progress bar: ██████░░░░
-const bar = (level) => '█'.repeat(Math.round(level / 10)) + '░'.repeat(10 - Math.round(level / 10));
+// Түвшинг (1–5) одоор харуулна: ★★★★☆
+const bar = (level) => '★'.repeat(level) + '☆'.repeat(5 - level);
 
 const FILES = {
   'about.txt': () => bio,
@@ -42,7 +42,12 @@ function runCommand(input, api) {
     case 'about':
       return bio;
     case 'skills':
-      return skills.flatMap((g) => [`# ${g.group}`, ...g.items.map((s) => `  ${s.name.padEnd(14)} ${bar(s.level)} ${s.level}%`)]);
+      return [
+        '# Hard skills',
+        ...hardSkills.map((s) => `  ${s.name.padEnd(18)} ${bar(s.level)}`),
+        '# Soft skills',
+        ...softSkills.map((s) => `  ${s.name.padEnd(18)} ${bar(s.level)}`),
+      ];
     case 'projects':
       return [
         ...projects.map((p, i) => `  ${i + 1}. ${p.title.padEnd(24)} [${p.tech.join(', ')}]`),

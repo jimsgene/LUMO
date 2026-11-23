@@ -10,7 +10,7 @@
   --faint: #4d4b47;
   --line: rgba(241, 239, 233, 0.09);
   --line-strong: rgba(241, 239, 233, 0.2);
-  --panel: rgba(17, 17, 19, 0.78);
+  --panel: #141416;
   --panel-solid: #121214;
   --tint: rgba(241, 239, 233, 0.035);
   --accent: #ff5b14;
@@ -18,6 +18,12 @@
   --accent-soft: rgba(255, 91, 20, 0.12);
   --shadow: 0 50px 100px -30px rgba(0, 0, 0, 0.75), 0 20px 40px -20px rgba(0, 0, 0, 0.5);
   --term-bg: #070708;
+  --dot: rgba(241, 239, 233, 0.16);
+  --glow-2: rgba(90, 140, 255, 0.1);
+  --band: #1d1d20;
+  --band-fg: #f1efe9;
+  --accent-2: #2f9e7a;
+  --hero-accent: var(--accent);
 
   --display: 'Unbounded', 'Onest', system-ui, sans-serif;
   --sans: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -28,14 +34,18 @@
 }
 
 :root[data-theme='light'] {
-  --bg: #ebe9e2;
-  --fg: #121211;
-  --muted: #6d6a63;
-  --faint: #a8a59d;
+  --bg: #f6f4ee;
+  --fg: #141413;
+  --muted: #6b6862;
+  --faint: #aaa79f;
   --line: rgba(18, 18, 17, 0.1);
-  --line-strong: rgba(18, 18, 17, 0.24);
-  --panel: rgba(247, 246, 241, 0.82);
-  --panel-solid: #f7f6f1;
+  --line-strong: rgba(18, 18, 17, 0.22);
+  --panel: #fffefb;
+  --panel-solid: #fffefb;
+  --dot: rgba(18, 18, 17, 0.16);
+  --glow-2: rgba(90, 140, 255, 0.14);
+  --band: #f0ede5;
+  --band-fg: #141413;
   --tint: rgba(18, 18, 17, 0.035);
   --accent: #f24e0b;
   --accent-ink: #ffffff;
@@ -80,19 +90,20 @@ kbd {
 /* ============================================================
    Ширээ, дэвсгэр, ширхэг
    ============================================================ */
-.desktop { position: fixed; inset: 0; overflow: hidden; user-select: none; }
-.field { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
-.vignette {
-  position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  background:
-    radial-gradient(60% 50% at 15% 85%, var(--accent-soft), transparent 70%),
-    radial-gradient(120% 90% at 50% 40%, transparent 55%, var(--bg) 100%);
+/* Дэвсгэр: цэвэр CSS цэгэн сүлжээ + зөөлөн өнгөт туяа. JavaScript, хулганы хөдөлгөөн огт ашиглахгүй тул хурдан. */
+.desktop {
+  position: fixed; inset: 0; overflow: hidden; user-select: none;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(55% 45% at 12% 88%, var(--accent-soft), transparent 70%),
+    radial-gradient(45% 40% at 92% 8%, var(--glow-2), transparent 70%),
+    radial-gradient(var(--dot) 1.1px, transparent 1.5px);
+  background-size: auto, auto, 28px 28px;
 }
 .grain {
-  position: absolute; inset: -50%; z-index: 2; pointer-events: none;
-  opacity: 0.07;
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  opacity: 0.06;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  animation: grain 1.2s steps(6) infinite;
 }
 :root[data-theme='light'] .grain { opacity: 0.11; mix-blend-mode: multiply; }
 @keyframes grain {
@@ -914,6 +925,130 @@ kbd {
   .link-val, .email-hint { display: none; }
   .palette-backdrop { padding-top: 10vh; }
   .palette-foot span:not(:last-child) { display: none; }
+}
+
+/* ============================================================
+   Хурд: том цонхнуудад blur ашиглахгүй (чирэхэд гацдаг байсан)
+   ============================================================ */
+.window { backdrop-filter: none; }
+
+/* ============================================================
+   Зураг (виджет + Миний тухай)
+   ============================================================ */
+.photo-widget { padding: 8px; text-align: left; display: block; transition: transform 0.3s var(--ease); }
+.photo-widget:hover { transform: translateY(-2px); }
+.photo-widget img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; object-position: 50% 28%; border-radius: 8px; }
+.photo-caption { display: block; padding: 8px 6px 2px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+.about-grid { grid-template-columns: 180px 1fr; align-items: start; }
+.polaroid { margin: 0; }
+.polaroid .tape { display: none; }
+.polaroid img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 28%; border-radius: 10px; border: 1px solid var(--line-strong); }
+.polaroid-caption { display: block; margin-top: 8px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+/* ============================================================
+   Бүтээлүүд — хөтчийн хүрээтэй бодит зураг
+   ============================================================ */
+.project-list { display: grid; gap: 34px; }
+.project-row { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 26px; align-items: start; }
+.project-row:nth-child(even) .project-card { order: 2; }
+.project-card { position: relative; display: block; text-decoration: none; color: inherit; }
+.project-row .project-info { display: block; margin: 0; }
+.browser-shot {
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--panel-solid);
+  box-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.45);
+}
+.browser-bar {
+  display: flex; align-items: center; gap: 6px;
+  height: 26px; padding: 0 10px;
+  background: var(--band);
+  color: var(--band-fg);
+  border-bottom: 1px solid var(--line);
+}
+.browser-bar i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity: 0.25; }
+.browser-bar span {
+  flex: 1; margin-left: 8px; padding: 2px 10px;
+  font-family: var(--mono); font-size: 10.5px;
+  border-radius: 999px;
+  background: var(--tint);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.browser-shot img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; transition: transform 0.8s var(--ease); }
+.project-card:hover .browser-shot img { transform: scale(1.03); }
+.project-card .project-open { opacity: 0; }
+.project-card:hover .project-open { opacity: 1; transform: none; }
+.project-info h3 { margin: 2px 0 2px; font-family: var(--display); font-weight: 400; font-size: 24px; letter-spacing: -0.03em; }
+.project-meta { margin: 0; font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+.project-meta span { color: var(--accent); }
+.project-tagline { margin: 4px 0 10px; font-size: 15px; color: var(--muted); }
+.lead.project-tagline { font-size: 18px; margin-top: -10px; margin-bottom: 18px; }
+.feature-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.feature-list li { position: relative; padding-left: 18px; font-size: 14px; line-height: 1.45; }
+.feature-list li::before { content: ''; position: absolute; left: 2px; top: 0.55em; width: 6px; height: 6px; background: var(--accent); border-radius: 1px; }
+.feature-list-short li { font-size: 13px; color: var(--muted); }
+.project-tech { margin: 12px 0 0; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.project-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.project-actions .btn { height: 34px; padding: 0 13px; font-size: 11.5px; }
+.project-desc { margin: 0 0 16px; line-height: 1.65; }
+.project-detail .browser-shot { margin-bottom: 10px; }
+.thumbs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; }
+.thumbs button { flex: none; width: 92px; border: 2px solid transparent; border-radius: 6px; overflow: hidden; opacity: 0.6; transition: opacity 0.2s, border-color 0.2s; }
+.thumbs button.is-on, .thumbs button:hover { opacity: 1; border-color: var(--accent); }
+.thumbs img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; }
+
+/* ============================================================
+   Ур чадварын одны зураг
+   ============================================================ */
+.skill-sky { position: relative; }
+.sky-chart {
+  display: block;
+  width: 100%;
+  border-radius: 12px;
+  background: radial-gradient(120% 120% at 50% 0%, #1e2a44, #0d1120 70%);
+}
+.sky-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; fill: rgba(241, 239, 233, 0.5); }
+.const-line { fill: none; stroke: rgba(241, 239, 233, 0.25); stroke-width: 1; stroke-dasharray: 3 4; }
+.soft .const-line { stroke: rgba(120, 220, 190, 0.3); }
+.star-node { cursor: pointer; outline: none; }
+.star-halo { fill: rgba(255, 140, 80, 0.14); }
+.star-core { fill: #ff8a4c; transition: transform 0.3s var(--ease); }
+.soft .star-halo { fill: rgba(120, 230, 200, 0.14); }
+.soft .star-core { fill: #7fe3c4; }
+.star-label { font-family: var(--sans); font-size: 11px; fill: rgba(241, 239, 233, 0.75); pointer-events: none; }
+.star-node:hover .star-core, .star-node.is-on .star-core { transform: scale(1.5); }
+.star-node.is-on .star-halo { fill: rgba(255, 140, 80, 0.3); }
+.soft .star-node.is-on .star-halo { fill: rgba(120, 230, 200, 0.3); }
+.star-node.is-on .star-label, .star-node:hover .star-label { fill: #fff; font-weight: 600; }
+.sky-card {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 4px 14px;
+  margin-top: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--line-strong);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  background: var(--tint);
+}
+.sky-card.is-soft { border-left-color: var(--accent-2); }
+.sky-kind { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.sky-card strong { font-family: var(--display); font-weight: 400; font-size: 20px; letter-spacing: -0.02em; }
+.sky-level { display: flex; gap: 2px; color: var(--line-strong); }
+.sky-level i { font-style: normal; }
+.sky-level i.on { color: var(--accent); }
+.sky-card.is-soft .sky-level i.on { color: var(--accent-2); }
+.sky-card p { grid-column: 1 / -1; margin: 2px 0 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
+.sky-hint { margin: 8px 0 0; font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: right; }
+
+@media (max-width: 700px) {
+  .about-grid { grid-template-columns: 1fr; }
+  .polaroid { width: 200px; }
+  .project-row { grid-template-columns: 1fr; gap: 14px; }
+  .project-row:nth-child(even) .project-card { order: 0; }
+  .star-label { font-size: 15px; }
+  .sky-card { grid-template-columns: 1fr auto; }
+  .sky-kind { grid-column: 1 / -1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
